@@ -1,39 +1,33 @@
 import re
+import glob
 
+# @todo Create training files of smaller size which should contain atleast 1000
+# questions for each of the 1000 frequent tags.
+def createTrainingFiles():
+    for i in range(1, len(glob.glob('../Data/body/body*.txt')) + 1):
+        # Open new training files for writing content. 
+        body_outfile = open("../Data/body/tr_body"+str(i)+".txt", 'w')
+        title_outfile = open("../Data/title/tr_title"+str(i)+".txt", 'w')
+        tag_outfile = open("../Data/tag/tr_tag"+str(i)+".txt", 'w')
+        code_outfile = open("../Data/code/tr_code"+str(i)+".txt", 'w')
 
-def removeHtmlTags():
-    f0 = open('../Data/body1.txt', 'r')
-    f1 = open('../Data/body_clear.txt', 'w')
+        # Take those questions only for which tag is there. Discard rest of the 
+        # data.
+        with open("../Data/body/body"+str(i)+".txt") as body_infile, open("../Data/title/title"+str(i)+".txt") as title_infile, open("../Data/tag/tag"+str(i)+".txt") as tag_infile, open("../Data/code/code"+str(i)+".txt") as code_infile:
+            for tag_line, title_line, body_line, code_line in zip(tag_infile, title_infile, body_infile, code_infile):
 
-    for line in f0:
-        cleanr = re.compile('<.*?>')
-        cleantext = re.sub(cleanr, '', line)
-        f1.write(cleantext)
+                # If tag there then write the data in the training files
+                if tag_line.strip():
+                    tag_outfile.write(tag_line)
+                    title_outfile.write(title_line)
+                    body_outfile.write(body_line)
+                    code_outfile.write(code_line)
 
-
-def go():
-
-	tag1 = open("../Data/tag1.txt", "rb")
-	title1 = open("../Data/title1.txt", "rb")	
-	body1 = open("../Data/body_clear.txt", "rb")
-	code1 = open("../Data/code1.txt", "rb")
-
-
-	tag11 = open("../Data/tag11.txt", "w")
-	title11 = open("../Data/title11.txt", "w")	
-	body11 = open("../Data/body11.txt", "w")
-	code11 = open("../Data/code11.txt", "w")
-
-
-	for line1, line2, line3, line4 in zip(tag1, title1, body1, code1):
-		if line1.strip():
-			tag11.write(line1)
-			title11.write(line2)
-			body11.write(line3)
-			code11.write(line4)
-		
-
+        # Close all the open files.
+        body_outfile.close()
+        tag_outfile.close()
+        title_outfile.close()
+        code_outfile.close()
 
 if __name__ == '__main__':
-	removeHtmlTags()
-	go()
+	createTrainingFiles()
