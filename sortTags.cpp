@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+const int Threshold = 1000;
+
 vector <string> split(string s) {
 	stringstream S(s);
 	vector <string> res;
@@ -52,8 +54,12 @@ int main() {
 	
 	sort(p.rbegin(), p.rend());
 
+	int cnt = 0;
 	for(auto it: p) {
+		cnt++;
 		cout << it.second << endl;
+		if(cnt == Threshold)
+			break;
 	}
 
 	return 0;
