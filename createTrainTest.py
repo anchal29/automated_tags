@@ -5,7 +5,7 @@ import sys
 
 def createTrainingFiles():
 
-    f0 = open('../Data/sortedTags.txt')
+    f0 = open('../Data/TagSorted')
     frequentTags = []
     for line in f0:
         frequentTags.append('<' + line.strip() + '>')
@@ -76,14 +76,14 @@ def createTrainingFiles():
             break
 
 def createTestingFiles():
-    numlines = flag = 0
+    num_lines = flag = 0
     threshold = 10000
     for i in range(1, len(glob.glob('../Data/body/body*.txt')) + 1):
         # Open new training files for writing content. 
-        body_outfile = open("../Data/body/test_body"+str(i)+".txt", 'w')
-        title_outfile = open("../Data/title/test_title"+str(i)+".txt", 'w')
-        tag_outfile = open("../Data/tag/test_tag"+str(i)+".txt", 'w')
-        code_outfile = open("../Data/code/test_code"+str(i)+".txt", 'w')
+        body_outfile = open("../Data/body/test_body.txt", 'w')
+        title_outfile = open("../Data/title/test_title.txt", 'w')
+        tag_outfile = open("../Data/tag/test_tag.txt", 'w')
+        code_outfile = open("../Data/code/test_code.txt", 'w')
 
         # Take those questions only for which tag is there. Discard rest of the 
         # data.
@@ -100,13 +100,8 @@ def createTestingFiles():
                 for tag in tags_infile:
                     tag =  tag.rstrip()
                     if tag in tag_line:
-                        flag=1
+                        flag = 1
                         break
-
-                    index += 1
-                    if(index == 1000):
-                        tags_infile.close()
-                        break;
             
             # If found tag on the line write it to the test data              
             if flag == 1:
@@ -118,8 +113,11 @@ def createTestingFiles():
                 flag = 0
 
             # Break if we reach threshold lines
-            if  num_lines <= threshold:
+            if  num_lines >= threshold:
                 break
+
+        if  num_lines >= threshold:
+            break
 
         # Close all the open files.
         body_outfile.close()
@@ -128,5 +126,5 @@ def createTestingFiles():
         code_outfile.close()
 
 if __name__ == '__main__':
-	createTrainingFiles()
+    createTrainingFiles()
     createTestingFiles()
