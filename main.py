@@ -9,7 +9,8 @@ import pickle
 def feature_vector_calc(tag):
     complete_feature_vector = []
     class_label = []
-    count_positive = count_negative = 0
+    count_positive = 0
+    count_negative = 0
     threshold = 1000
     for i in range(1, len(glob.glob('../Data/body/tr_*')) + 1):
         # Feature vector is assumed to contain threshold number of positive and 
@@ -64,7 +65,7 @@ def testing():
             tag_list.append(tag)
 
     for i in range(1, len(glob.glob('../Data/body/test_body*.txt')) + 1):
-        # Open new training files for writing content. 
+        # Open new training files for reading content. 
         body_infile = open("../Data/body/test_body.txt")
         title_infile = open("../Data/title/test_title.txt")
         tag_infile = open("../Data/tag/test_tag.txt")
@@ -92,7 +93,7 @@ def testing():
             for i in range(0, len(sorted_tags)):
                 sorted_tag.append(sorted_tags[i][0])
             actual_tags = re.findall(r"<(.*?)>", tag_line)
-            # print sorted_tag[:5], actual_tags
+            print sorted_tag[:5], actual_tags
 
 
 """Function to create the classifier using feature vector and class labels for 
@@ -118,5 +119,5 @@ def main():
     outfile.close()
 
 if __name__ == '__main__':
-    main()
+    # main()
     testing()

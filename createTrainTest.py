@@ -99,6 +99,7 @@ def createTestingFiles():
             with open("../Data/TagSorted") as tags_infile:
                 for tag in tags_infile:
                     tag =  tag.rstrip()
+                    tag = '<' + str(tag) + '>'
                     if tag in tag_line:
                         flag = 1
                         break
@@ -126,5 +127,5 @@ def createTestingFiles():
         code_outfile.close()
 
 if __name__ == '__main__':
-    createTrainingFiles()
+    # createTrainingFiles()
     createTestingFiles()
