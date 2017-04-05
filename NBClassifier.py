@@ -1,3 +1,4 @@
+# @todo Remodel this code to work for the latest changes in other files.
 import re
 import glob
 import pickle
@@ -66,7 +67,7 @@ def testing(classifier, count_vect, tfidf_transformer):
     # (classifier, count_vect, tfidf_transformer) = pickle.load(infile)
     # infile.close()
     tag_list = []
-    temp
+    temp = [[]]
     with open("../Data/TagSorted") as tags_infile:
         for tag in tags_infile:
             tag =  tag.rstrip()
@@ -82,7 +83,11 @@ def testing(classifier, count_vect, tfidf_transformer):
             predicted_tag = []
             predict_tag = {}
             body = [body_line.rstrip()]
+            index = 1
             for tag in tag_list:
+                index += 1
+                if(index > 20):
+                    break
                 # print body
                 # body = ["Just some random text",]
                 body_new_counts = count_vect[tag].transform(body)
@@ -94,7 +99,7 @@ def testing(classifier, count_vect, tfidf_transformer):
                 # print clf.predict(body_new_tfidf)
                 predicted = classifier[tag].predict(body_new_tfidf)
                 if predicted:
-                    temp = float(classifier[tag].predict_log_proba([feature]))
+                    temp = (classifier[tag].predict_log_proba(body_new_tfidf))
                     predict_tag[tag] = temp[0][predicted]
                     predicted_tag.append(tag)
             sorted_tags = sorted(predict_tag.items(), key = operator.itemgetter(1), reverse = True)
@@ -123,6 +128,8 @@ def main():
                         # Just iterate over the top 1000 tags
             print 'Percentage:' + str(100.0*index/1000);
             index += 1
+            if(index > 20):
+                break
 
             # break;
     print len(body), len(title), len(class_label)
@@ -132,4 +139,4 @@ def main():
     # outfile.close()
 
 if __name__ == '__main__':
-    main()
+    main()  
