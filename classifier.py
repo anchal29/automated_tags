@@ -14,7 +14,7 @@ def getFeatureVector(tag):
     class_label = []
     count_positive = 0
     count_negative = 0
-    threshold = 100
+    threshold = 1000
     for i in range(1, len(glob.glob("../Data/training/*")) + 1):
         # Feature vector is assumed to contain threshold number of positive and 
         # negative samples.
