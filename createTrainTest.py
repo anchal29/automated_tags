@@ -1,6 +1,7 @@
 import re
 import sys
 import glob
+import random
 from random import shuffle
 
 class questionInfo:
@@ -111,6 +112,9 @@ def createTestingFiles():
         # Take those questions only for which tag is there. Discard rest of the 
         # data.
         for line in infile:
+            flag = random.randint(0, 128)
+            if flag < 100:
+                continue
             question = questionInfo(line)
             # If found tag on the line write it to the test data              
             if question.consistFrequentTags(frequent_tags):
