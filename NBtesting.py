@@ -58,7 +58,8 @@ def helper(clf):
             for j in test_tags[i]:
                 if k == j:
                     true_positive += 1.0
-        precision = true_positive / len(tag_output)
+        precision = true_positive /  len(tag_output) if len(tag_output) else 0 
+        
         recall = true_positive / len(test_tags[i])
         # print tag_output[0:5], test_tags[i], precision, recall
 
