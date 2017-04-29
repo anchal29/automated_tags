@@ -1,33 +1,20 @@
 import operator
 import numpy as np
 import cPickle as pickle
+
 from createTrainTest import questionInfo
 from createTrainTest import setUpProgressBar
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.linear_model import SGDClassifier
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
 
-def getTestData(frequent_tags):
-    body = []
-    tag = []
-    title = []
-    full_data = {'body': [], 'title': [], 'code': []}
-    with open("../Data/testing/test_data.txt", "r") as infile:
-        for line in infile:
-            question = questionInfo(line)
-            body.append(question.body)
-            tag.append(question.getFrequentTags(frequent_tags))
-            title.append(question.title)
-            full_data["body"].append(question.body)
-            full_data["title"].append(question.title)
-            full_data["code"].append(question.code)
-    return body, title, tag, full_data
+from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.base import BaseEstimator, TransformerMixin
+
+from util.commonBase import ItemSelector, identity, tokenizer, tagCountExtractor
+from util.getTrainTestData import getTestData
 
 # @todo Merge it with the above function
 # Just a helper function to find the overall F1 score for the training data.
 def helper(clf):
-    with open("../Data/dat" + str(clf) + ".pickle", "r") as d:
+    with open("../Data/temp_data" + str(clf) + ".pickle", "r") as d:
         (predicted, confi_score) = pickle.load(d)
     # print predicted[0][0]
     # print confi_score[0]
@@ -79,16 +66,17 @@ def testClassifier(clf):
 
     (test_body, test_title, test_tags, full_data) = getTestData(frequent_tags)
     for tag in frequent_tags:
-        path = "../Data/" + clf.upper() + "_classifier_data/" + str(tag) + ".pickle"
+        path = "../Data/" + clf.upper() + "_classifier_data_temp/" + str(tag) + ".pickle"
+        
         with open(str(path), "r") as infile:
             text_clf = pickle.load(infile)
         infile.close()
-        predicted.append([text_clf.predict(test_body)])
+        predicted.append([text_clf.predict(full_data)])
         if clf == "svm":
-            confi_score.append([text_clf.decision_function(test_body)])
+            confi_score.append([text_clf.decision_function(full_data)])
         else:
-            confi_score.append([text_clf.predict_log_proba(test_body)])
-    with open("../Data/dat" + str(clf) + ".pickle", "wb") as d:
+            confi_score.append([text_clf.predict_log_proba(full_data)])
+    with open("../Data/temp_data" + str(clf) + ".pickle", "wb") as d:
         pickle.dump((predicted, confi_score), d)
     print "Done predicting values!!"
     print "Evaluating results....."
