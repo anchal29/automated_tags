@@ -26,6 +26,8 @@ def helper(clf):
     (test_body, test_title, test_tags, full_data) = getTestData(frequent_tags)
     predict_tag = []
     f1_score_list = []
+    precision_list = []
+    recall_list = []
     for i in range(0, len(test_body)):
         index = 0
         tag_confidence = {}
@@ -52,6 +54,9 @@ def helper(clf):
 
         f1_score = 2*((precision * recall) / (precision + recall)) if (precision != 0 or recall != 0) else 0
         f1_score_list.append(f1_score)
+        precision_list.append(precision)
+        recall_list.append(recall)
+    print "Precision: " + str(np.mean(precision_list)) + "   and Recall: " + str(np.mean(recall_list))
     print "Resulting F1 score: " + str(np.mean(f1_score_list))
 
 # For NB Classifier
@@ -84,4 +89,7 @@ def testClassifier(clf):
 
 if __name__ == '__main__':
     # @todo Remove the comment in later codes. Only for current use.
-    testClassifier("svm")
+    clfs = ("nb", "svm")
+    for clf in clfs:
+        print "Testing now!!"
+        testClassifier(clf)

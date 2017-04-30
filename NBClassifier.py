@@ -4,6 +4,7 @@ import glob
 import numpy as np
 import cPickle as pickle
 
+from NBtesting import testClassifier
 from createTrainTest import questionInfo
 from createTrainTest import setUpProgressBar
 from createTrainTest import createTestingFiles
@@ -16,8 +17,8 @@ from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 
-from util.commonBase import ItemSelector, identity, tokenizer, tagCountExtractor
 from util.getTrainTestData import getTrainData
+from util.commonBase import ItemSelector, identity, tokenizer, tagCountExtractor
 
 def getFeatureUnion():
     feature_union = FeatureUnion([
@@ -25,7 +26,7 @@ def getFeatureUnion():
             ('selector', ItemSelector(keys=['body'])),
             ("vect", CountVectorizer()),
             ("tfidf", TfidfTransformer()),
-            ('kbest', SelectKBest(chi2, k=100)),
+            ('kbest', SelectKBest(chi2, k=1000)),
         ])),
         ("title", Pipeline([
             ('selector', ItemSelector(keys=['title'])),
@@ -37,7 +38,6 @@ def getFeatureUnion():
             ('selector', ItemSelector(keys=['body', 'title'])),
             ("count", tagCountExtractor()),
             ("tfidf", TfidfTransformer()),
-            ('kbest', SelectKBest(chi2, k=100)),
             # ("tfidf", TfidfTransformer()),
         ])),
     ])
@@ -62,8 +62,9 @@ def trainClassifier(body, title, class_label, full_data, clf):
     return text_clf
 
 # Hyper parameter tuning for nb classifier only for now.
-def hyperParameterTuning():
-    text_clf = getClassifier()
+def hyperParameterTuning(clf):
+    text_clf = getClassifier(clf)
+
     parameters = {'vect__ngram_range': [(1, 1), (1, 2)],
                   'tfidf__use_idf': (True, False),
                   'clf__alpha': (1, 0.1, 2, 0.5),
@@ -90,7 +91,7 @@ def main(clf, tag_list):
         (body, title, class_label, full_data) = getTrainData(tag)
         text_clf = trainClassifier(body, title, class_label, full_data, clf)
         # print tag
-        path = "../Data/" + clf.upper() + "_classifier_data_temp/" + str(tag) + ".pickle"
+        path = "../Data/" + clf.upper() + "_classifier_data_complete/" + str(tag) + ".pickle"
         with open(str(path), "wb") as outfile:
             pickle.dump(text_clf, outfile)
         outfile.close()
@@ -114,11 +115,11 @@ if __name__ == '__main__':
             print "SVM classifier"
         else:
             print "Multinomial Naive bayes classifier"
-        directory = "../Data/" + clf.upper() + "_classifier_data_temp"
+        directory = "../Data/" + clf.upper() + "_classifier_data_complete"
         if not os.path.exists(directory):
                 os.makedirs(directory)
         main(clf, tag_list)
         # hyperParameterTuning()
-    for clf in clfs:
-        print "\nTesting now!!"
-        testClassifier(clf)
+    # for clf in clfs:
+    #     print "\nTesting now!!"
+    #     testClassifier(clf)
