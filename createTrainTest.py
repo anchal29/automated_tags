@@ -15,7 +15,7 @@ class questionInfo:
             return 1
     # Checks if this question has the given tag or not.
     def consistThisTag(self, given_tag):
-        if "<" + given_tag + ">" in self.tag:
+        if str("<" + given_tag + ">") in str(self.tag):
             return 1
         else:
             return 0
@@ -118,6 +118,8 @@ def createTestingFiles():
             question = questionInfo(line)
             # If found tag on the line write it to the test data              
             if question.consistFrequentTags(frequent_tags):
+                if len(question.getFrequentTags(frequent_tags)) < 3:
+                    continue
                 num_lines += 1
                 if not num_lines%100:
                     sys.stdout.write("=")

@@ -20,6 +20,11 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from util.getTrainTestData import getTrainData
 from util.commonBase import ItemSelector, identity, tokenizer, tagCountExtractor
 
+# Get the parent directory location. Everything will be stored there in the Data 
+# directory.
+fpath = os.path.dirname(os.path.realpath(__file__))
+pDir = os.path.abspath(os.path.join(fpath, os.pardir))
+
 def getFeatureUnion():
     feature_union = FeatureUnion([
         ("body", Pipeline([
@@ -38,7 +43,6 @@ def getFeatureUnion():
             ('selector', ItemSelector(keys=['body', 'title'])),
             ("count", tagCountExtractor()),
             ("tfidf", TfidfTransformer()),
-            # ("tfidf", TfidfTransformer()),
         ])),
     ])
     return feature_union
@@ -46,10 +50,10 @@ def getFeatureUnion():
 def getClassifier(clf):
     return {
         "nb": Pipeline([("feature_union", getFeatureUnion()),
-                        ("clf", MultinomialNB()),
+                        ("clasf", MultinomialNB()),
         ]),
         "svm": Pipeline([("feature_union", getFeatureUnion()),
-                         ("clf", SGDClassifier()),
+                         ("clasf", SGDClassifier()),
         ]),
     }[clf]
 
@@ -62,22 +66,24 @@ def trainClassifier(body, title, class_label, full_data, clf):
     return text_clf
 
 # Hyper parameter tuning for nb classifier only for now.
-def hyperParameterTuning(clf):
-    text_clf = getClassifier(clf)
+def hyperParameterTuning(clf, tag_list):
+    if clf is 'nb':
+        parameters = {
+            'clasf__alpha': (1, 0.1, 2, 0.5),
+        }
+    else:
+        parameters = {
+            'clasf__penalty': ('l1', 'l2'),
+            'clasf__alpha': (0.003, 0.0003, 0.0001, 0.00001),
+        }
 
-    parameters = {'vect__ngram_range': [(1, 1), (1, 2)],
-                  'tfidf__use_idf': (True, False),
-                  'clf__alpha': (1, 0.1, 2, 0.5),
-    }
-    gs_clf = GridSearchCV(text_clf, parameters, n_jobs=-1)
-    with open("../Data/TagSorted") as tags_infile:
-        for tag in tags_infile:
-            (body, title, class_label) = getTrainData(tag, 200)
-            gs_clf = gs_clf.fit(body, class_label)
-            for param_name in sorted(parameters.keys()):
-                print("%s: %r" % (param_name, gs_clf.best_params_[param_name]))
-
-            
+    for tag in tag_list:
+        text_clf = getClassifier(clf)
+        gs_clf = GridSearchCV(text_clf, parameters, n_jobs=-1)
+        (body, title, class_label, full_data) = getTrainData(tag, 200)
+        gs_clf = gs_clf.fit(full_data, class_label)
+        for param_name in sorted(parameters.keys()):
+            print("%s: %r" % (param_name, gs_clf.best_params_[param_name]))
 
 """Function to create the classifier using feature vector and class labels for 
     the top 1000 tags."""
@@ -91,10 +97,9 @@ def main(clf, tag_list):
         (body, title, class_label, full_data) = getTrainData(tag)
         text_clf = trainClassifier(body, title, class_label, full_data, clf)
         # print tag
-        path = "../Data/" + clf.upper() + "_classifier_data_complete/" + str(tag) + ".pickle"
+        path = pDir + "/Data/" + clf.upper() + "_classifier_data_complete/" + str(tag) + ".pickle"
         with open(str(path), "wb") as outfile:
             pickle.dump(text_clf, outfile)
-        outfile.close()
         if not index % 10:
             sys.stdout.write("=")
             sys.stdout.flush()
@@ -104,22 +109,19 @@ def main(clf, tag_list):
 
 if __name__ == '__main__':
     tag_list = []
-    with open("../Data/TagSorted") as tags_infile:
+    with open(pDir + "/Data/TagSorted") as tags_infile:
         for tag in tags_infile:
             tag =  tag.rstrip()
             tag_list.append(tag)
     print len(tag_list)
-    clfs = ("nb", "svm")
+    clfs = ("svm", "nb")
     for clf in clfs:
         if clf == "svm":
             print "SVM classifier"
         else:
             print "Multinomial Naive bayes classifier"
-        directory = "../Data/" + clf.upper() + "_classifier_data_complete"
+        directory = pDir + "/Data/" + clf.upper() + "_classifier_data_complete"
         if not os.path.exists(directory):
                 os.makedirs(directory)
         main(clf, tag_list)
-        # hyperParameterTuning()
-    # for clf in clfs:
-    #     print "\nTesting now!!"
-    #     testClassifier(clf)
+        # hyperParameterTuning(clf, tag_list)

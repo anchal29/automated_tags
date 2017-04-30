@@ -3,6 +3,11 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 
+# Get the parent directory location. Everything will be stored there in the Data 
+# directory.
+fpath = os.path.dirname(os.path.realpath(__file__))
+pDir = os.path.abspath(os.path.join(fpath, os.pardir))
+
 # Global
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -40,9 +45,9 @@ def parse():
     # the created file.
     sep = " {[(+-)]} "
     # Open the files for writing into them
-    outfile = open("../Data/parsed/divided_data"+str(index)+".txt", 'w')
+    outfile = open(pDir + "/Data/parsed/divided_data"+str(index)+".txt", "w")
 
-    context = ET.iterparse("../Data/Posts.xml", events=("start", "end"))
+    context = ET.iterparse(pDir + "/Data/Posts.xml", events=("start", "end"))
     # Turn it into an iterator
     context = iter(context)
     # Get the root element
@@ -63,14 +68,14 @@ def parse():
             if(outfile.tell() > 1073741824):
                 index += 1
                 outfile.close()
-                outfile = open("../Data/parsed/divided_data"+str(index)+".txt", 'w')
+                outfile = open(pDir + "/Data/parsed/divided_data"+str(index)+".txt", 'w')
             root.clear()
 
 if __name__ == '__main__':
     # Create the following directories if they don't exist.
-    directories = ['../Data/parsed', '../Data/training', '../Data/testing']
+    directories = [pDir + '/Data/parsed', pDir + '/Data/training', pDir + '/Data/testing']
     for directory in directories:
         # No race condition here. So, its safe to use this piece of code.
         if not os.path.exists(directory):
             os.makedirs(directory)
-    parse()
+    # parse()

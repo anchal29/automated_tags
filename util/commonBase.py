@@ -51,7 +51,7 @@ class tagCountExtractor(CountVectorizer):
         return super(tagCountExtractor, self).transform(x)
 
 
-tag_re = '[' + punctuation.replace('#', '').replace('+', '').replace('_', '').replace('-', '') + ']+'
+tag_re = '[' + punctuation.replace('#', '').replace('+', '').replace('.', '').replace('_', '').replace('-', '') + ']+'
 tag_re = re.compile(tag_re)
 
 def tokenizer(s):

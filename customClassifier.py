@@ -122,7 +122,6 @@ def saveClassifiers(tag_list):
         svc_clf = build(SGDClassifier(), body, class_label)
         with open("../Data/Custom_classifier/"+str(tag)+".pickle", "wb") as outfile:
             pickle.dump(svc_clf, outfile)
-        outfile.close()
         if not index % 10:
             sys.stdout.write("=")
             sys.stdout.flush()
@@ -144,7 +143,6 @@ def testClassifiers(tag_list):
         # print len(body)
         with open("../Data/Custom_classifier/"+str(tag)+".pickle", "r") as infile:
             text_clf = pickle.load(infile)
-        infile.close()
         predicted.append([text_clf.predict(body)])
         confi_score.append([text_clf.decision_function(body)])
         if not index % 10:
