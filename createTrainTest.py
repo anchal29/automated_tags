@@ -98,10 +98,11 @@ def createTestingFiles():
     frequent_tags = []
     for line in tag_file:
         frequent_tags.append(line.strip())
+    # frequent_tags = frequent_tags[0:100]
 
     # To get some random testing data everytime.
     index_list = range(1, len(glob.glob('../Data/parsed/divided_data*.txt')) + 1)
-    shuffle(index_list)
+    # shuffle(index_list)
     setUpProgressBar()
     for j in range(0, len(glob.glob('../Data/parsed/divided_data*.txt'))):
         i = index_list[j]
@@ -118,8 +119,6 @@ def createTestingFiles():
             question = questionInfo(line)
             # If found tag on the line write it to the test data              
             if question.consistFrequentTags(frequent_tags):
-                if len(question.getFrequentTags(frequent_tags)) < 3:
-                    continue
                 num_lines += 1
                 if not num_lines%100:
                     sys.stdout.write("=")
@@ -137,5 +136,7 @@ def createTestingFiles():
 
 
 if __name__ == '__main__':
+    print "Creating training and testing data...\n"
     createTrainingFiles()
+    print "Creating testing data now...\n"
     createTestingFiles()

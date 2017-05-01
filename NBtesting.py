@@ -29,6 +29,9 @@ def helper(clf):
         for line in tag_file:
             frequent_tags.append(line.strip())
     
+    # Comment this later on ----here
+    # frequent_tags = frequent_tags[0:100]
+
     (test_body, test_title, test_tags, full_data) = getTestData(frequent_tags)
     predict_tag = []
     f1_score_list = []
@@ -48,14 +51,17 @@ def helper(clf):
         tag_output = [sorted_tag[j][0] for j in range(0,  len(sorted_tag))]
         confi_score_output = [sorted_tag[j][1] for j in range(0,  len(sorted_tag))]
         true_positive = 0
+        
+        # UNComment this later on ----here
         tag_output = tag_output[0:5]
+
         for k in tag_output:
             for j in test_tags[i]:
                 if k == j:
                     true_positive += 1.0
         precision = true_positive /  len(tag_output) if len(tag_output) else 0 
         
-        recall = true_positive / len(test_tags[i])
+        recall = true_positive / len(test_tags[i]) if len(test_tags[i]) else 0
         # print tag_output[0:5], test_tags[i], precision, recall
 
         f1_score = 2*((precision * recall) / (precision + recall)) if (precision != 0 or recall != 0) else 0
@@ -74,6 +80,9 @@ def testClassifier(clf):
     with open(pDir + '/Data/TagSorted') as tag_file:
         for line in tag_file:
             frequent_tags.append(line.strip())
+
+    # Comment this later on ----here
+    # frequent_tags = frequent_tags[0:100]
 
     (test_body, test_title, test_tags, full_data) = getTestData(frequent_tags)
     print '[Done]'
@@ -95,8 +104,11 @@ def testClassifier(clf):
     helper(clf)
 
 if __name__ == '__main__':
-    # @todo Remove the comment in later codes. Only for current use.
     clfs = ("svm", "nb")
     for clf in clfs:
-        print "Testing now!!"
+        print "Testing now...\n"
+        if clf == "svm":
+            print "For SVM classifier"
+        else:
+            print "For Multinomial Naive bayes classifier"
         testClassifier(clf)

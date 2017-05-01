@@ -186,6 +186,7 @@ def testClassifiers(tag_list):
 
 if __name__ == '__main__':
     tag_list = []
+    print "Implementing the custom classifier..."
     with open("../Data/TagSorted") as tags_infile:
         for tag in tags_infile:
             tag =  tag.rstrip()
@@ -194,5 +195,5 @@ if __name__ == '__main__':
     directory = "../Data/Custom_classifier"
     if not os.path.exists(directory):
             os.makedirs(directory)
-    # saveClassifiers(tag_list)
+    saveClassifiers(tag_list)
     testClassifiers(tag_list)

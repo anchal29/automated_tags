@@ -3,6 +3,7 @@ import re
 import sys
 import glob
 import operator
+import numpy as np
 import cPickle as pickle
 
 from sklearn.linear_model import SGDClassifier
@@ -186,5 +187,6 @@ def testing():
 
 
 if __name__ == '__main__':
-    # learnClassifier()
+    print "Implementing fixed feature space classifier."
+    learnClassifier()
     testing()

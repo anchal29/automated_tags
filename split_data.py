@@ -72,10 +72,11 @@ def parse():
             root.clear()
 
 if __name__ == '__main__':
+    print "Parsing the data...\n"
     # Create the following directories if they don't exist.
     directories = [pDir + '/Data/parsed', pDir + '/Data/training', pDir + '/Data/testing']
     for directory in directories:
         # No race condition here. So, its safe to use this piece of code.
         if not os.path.exists(directory):
             os.makedirs(directory)
-    # parse()
+    parse()

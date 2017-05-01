@@ -94,9 +94,11 @@ def main(clf, tag_list):
     tfidf_transformer = {}
     setUpProgressBar()
     for tag in tag_list:
+        # (body, title, class_label, full_data) = getTrainData(tag, 500)
         (body, title, class_label, full_data) = getTrainData(tag)
         text_clf = trainClassifier(body, title, class_label, full_data, clf)
         # print tag
+        # path = pDir + "/Data/" + clf.upper() + "_classifier_data_reduced/" + str(tag) + ".pickle"
         path = pDir + "/Data/" + clf.upper() + "_classifier_data_complete/" + str(tag) + ".pickle"
         with open(str(path), "wb") as outfile:
             pickle.dump(text_clf, outfile)
@@ -108,18 +110,25 @@ def main(clf, tag_list):
 
 
 if __name__ == '__main__':
+    print "Implementing the generic classifier..."
     tag_list = []
     with open(pDir + "/Data/TagSorted") as tags_infile:
         for tag in tags_infile:
             tag =  tag.rstrip()
             tag_list.append(tag)
+
+    # # Comment this later on ----here
+    # tag_list = tag_list[0:100]
+
     print len(tag_list)
     clfs = ("svm", "nb")
+    print "Training now....\n"
     for clf in clfs:
         if clf == "svm":
             print "SVM classifier"
         else:
             print "Multinomial Naive bayes classifier"
+        # directory = pDir + "/Data/" + clf.upper() + "_classifier_data_reduced"
         directory = pDir + "/Data/" + clf.upper() + "_classifier_data_complete"
         if not os.path.exists(directory):
                 os.makedirs(directory)
